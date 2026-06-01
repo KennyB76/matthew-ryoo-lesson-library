@@ -4,7 +4,7 @@
   Newton School / Live Classroom — student portal (2026-06-01)
   Student: Matthew Ryoo
   Theme: sky blue (#0277bd / #e3f2fd / #01579b)
-  Features: masthead + timeline + sibling link + light/dark + ko/en toggle
+  Features: masthead + timeline (PDF modal popup) + light/dark + ko/en toggle
 -->
 <html lang="en" data-theme="light">
 <head>
@@ -44,6 +44,7 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.65; min-height: 100vh; transition: background .2s, color .2s; }
+  body.modal-open { overflow: hidden; }
 
   nav { position: sticky; top: 0; z-index: 200; background: var(--paper); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 1.75rem; height: 52px; }
   .nav-brand { font-size: .8rem; font-weight: 700; letter-spacing: .1em; color: var(--student); text-transform: uppercase; }
@@ -72,18 +73,24 @@
   ul.timeline li { padding: 10px 0 10px 18px; position: relative; font-size: 13px; display: flex; align-items: flex-start; gap: 0; flex-wrap: wrap; }
   ul.timeline li::before { content: ""; position: absolute; left: -22px; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--student); }
   .tl-date { font-weight: 700; color: var(--student); margin-right: 10px; white-space: nowrap; flex-shrink: 0; font-family: var(--mono); font-size: 12px; }
-  .empty-note { font-size: .85rem; color: var(--ink-soft); font-style: italic; padding: 6px 0; }
-  .lesson-link { font-weight: 500; color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; transition: all .15s; flex: 1; }
+  .lesson-link { font-weight: 500; color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; transition: all .15s; cursor: pointer; flex: 1; }
   .lesson-link:hover { color: var(--student); border-bottom-color: var(--student); }
-  .hw-badge { display: inline-block; margin-left: 8px; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; background: var(--student-soft); color: var(--student-deep); border-radius: 3px; padding: 1px 6px; text-transform: uppercase; flex-shrink: 0; }
-
-  .sibling-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 4px; }
-  .sibling-link { display: inline-flex; align-items: center; gap: 6px; background: var(--student-soft); border: 1px solid var(--line); border-left: 3px solid var(--student); border-radius: var(--radius); padding: .6rem 1rem; text-decoration: none; color: var(--ink); font-weight: 600; font-size: .9rem; transition: all .15s; }
-  .sibling-link:hover { border-color: var(--student); box-shadow: 0 4px 14px var(--student-glow); transform: translateY(-1px); }
+  .pdf-badge { display: inline-block; margin-left: 8px; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; background: var(--student-soft); color: var(--student-deep); border-radius: 3px; padding: 1px 6px; text-transform: uppercase; flex-shrink: 0; }
 
   .teacher-note { background: var(--card-bg); padding: 16px 20px; border-radius: 8px; border-left: 3px solid var(--student); font-style: italic; color: var(--ink); font-size: .9rem; line-height: 1.75; }
   footer { text-align: center; padding: 28px 32px; font-size: 11px; color: var(--ink-soft); }
   footer .cr { margin-top: 6px; font-style: italic; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(8,15,20,.82); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: var(--paper); border-radius: 12px; width: 94vw; max-width: 1100px; height: 94vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.5); border: 1px solid var(--student); }
+  .modal-header { padding: 10px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--ink-soft); flex-shrink: 0; }
+  .modal-title { font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .modal-esc { font-size: 10.5px; color: var(--ink-soft); opacity: .55; white-space: nowrap; margin-left: 8px; }
+  .modal-close { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--ink-soft); padding: 0 6px; flex-shrink: 0; line-height: 1; }
+  .modal-close:hover { color: var(--student); }
+  .modal-iframe { flex: 1; border: none; width: 100%; }
 </style>
 </head>
 <body>
@@ -108,7 +115,7 @@
       <span>&middot;</span>
       <span data-ko="Mr. Kenny" data-en="Mr. Kenny">Mr. Kenny</span>
       <span>&middot;</span>
-      <span data-ko="Dwight School" data-en="Dwight School">Dwight School</span>
+      <span data-ko="Dwight-Englewood" data-en="Dwight-Englewood">Dwight-Englewood</span>
     </div>
   </header>
 
@@ -126,13 +133,21 @@
     <ul class="timeline">
       <li>
         <span class="tl-date">06-01</span>
-        <a class="lesson-link" href="https://onedrive.live.com/view.aspx?resid=26DC0D8618B1EF2B%21s203b40e563854e028622793e3a6e29ea&amp;id=documents&amp;wd=target%28June.one%7C108D83FF-8B48-4420-BE0E-8E5C80ED57F5%2FHW%206%5C%2F1%5C%2F2026%7CF067646D-F94C-433B-B2BF-52E8971D5F59%2F%29&amp;wdpartid={F3599CFF-CC8C-036D-0279-4F4156B7D9D6}{1}&amp;wdsectionfileid=26DC0D8618B1EF2B!s33fdd2b9ffab4f7694370a07a1c2c010" target="_blank" rel="noopener" data-ko="숙제 — 6/1/2026" data-en="Homework — 6/1/2026">Homework — 6/1/2026</a>
-        <span class="hw-badge">HW</span>
+        <a class="lesson-link"
+           data-src="2026-06-01/6-1 Matthew Ryoo.pdf"
+           data-label="Homework — 6/1/2026"
+           data-ko="숙제 — 6/1/2026" data-en="Homework — 6/1/2026"
+           onclick="openModal(this.dataset.src, this.dataset.label)">Homework — 6/1/2026</a>
+        <span class="pdf-badge">PDF</span>
       </li>
       <li>
         <span class="tl-date">06-01</span>
-        <a class="lesson-link" href="https://onedrive.live.com/view.aspx?resid=26DC0D8618B1EF2B%21s203b40e563854e028622793e3a6e29ea&amp;id=documents&amp;wd=target%28June.one%7C108D83FF-8B48-4420-BE0E-8E5C80ED57F5%2FHW%206%5C%2F1%5C%2F2026%200B%20A-01%7CEF6A9FFE-9849-4334-AC9D-5B5BC46E7947%2F%29&amp;wdpartid={508A0A47-42C7-0820-1C84-E973AFA82DCE}{1}&amp;wdsectionfileid=26DC0D8618B1EF2B!s33fdd2b9ffab4f7694370a07a1c2c010" target="_blank" rel="noopener" data-ko="숙제 — 6/1/2026 (0B A-01)" data-en="Homework — 6/1/2026 (0B A-01)">Homework — 6/1/2026 (0B A-01)</a>
-        <span class="hw-badge">HW</span>
+        <a class="lesson-link"
+           data-src="2026-06-01/0B A-01.pdf"
+           data-label="Homework — 0B A-01"
+           data-ko="숙제 — 0B A-01" data-en="Homework — 0B A-01"
+           onclick="openModal(this.dataset.src, this.dataset.label)">Homework — 0B A-01</a>
+        <span class="pdf-badge">PDF</span>
       </li>
     </ul>
   </section>
@@ -152,6 +167,19 @@
 
 </div>
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:8px;overflow:hidden;">
+        <span class="modal-title" id="modalTitle"></span>
+        <span class="modal-esc">ESC to close</span>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    </div>
+    <iframe class="modal-iframe" id="modalIframe" src="about:blank"></iframe>
+  </div>
+</div>
+
 <script>
   (function(){ const s = localStorage.getItem('matthew-theme') || 'light'; document.documentElement.setAttribute('data-theme', s); document.getElementById('theme-toggle').textContent = s === 'dark' ? 'Light' : 'Dark'; })();
   function toggleTheme(){ const h = document.documentElement; const d = h.getAttribute('data-theme') === 'dark'; const n = d ? 'light' : 'dark'; h.setAttribute('data-theme', n); document.getElementById('theme-toggle').textContent = d ? 'Dark' : 'Light'; localStorage.setItem('matthew-theme', n); }
@@ -159,6 +187,15 @@
   function applyLang(){ document.querySelectorAll('[data-ko]').forEach(el => { el.textContent = el.getAttribute('data-' + lang); }); document.getElementById('lang-toggle').textContent = lang === 'ko' ? 'EN' : '한국어'; }
   function toggleLang(){ lang = lang === 'ko' ? 'en' : 'ko'; localStorage.setItem('matthew-lang', lang); applyLang(); }
   if (lang === 'ko') applyLang();
+
+  const overlay = document.getElementById('modalOverlay');
+  const iframe  = document.getElementById('modalIframe');
+  const titleEl = document.getElementById('modalTitle');
+  function openModal(src, label){ iframe.src = encodeURI(src); titleEl.textContent = label; overlay.classList.add('open'); document.body.classList.add('modal-open'); }
+  function closeModal(){ overlay.classList.remove('open'); document.body.classList.remove('modal-open'); iframe.src = 'about:blank'; }
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
