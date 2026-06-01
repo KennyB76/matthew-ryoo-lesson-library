@@ -73,6 +73,9 @@
   ul.timeline li::before { content: ""; position: absolute; left: -22px; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--student); }
   .tl-date { font-weight: 700; color: var(--student); margin-right: 10px; white-space: nowrap; flex-shrink: 0; font-family: var(--mono); font-size: 12px; }
   .empty-note { font-size: .85rem; color: var(--ink-soft); font-style: italic; padding: 6px 0; }
+  .lesson-link { font-weight: 500; color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; transition: all .15s; flex: 1; }
+  .lesson-link:hover { color: var(--student); border-bottom-color: var(--student); }
+  .hw-badge { display: inline-block; margin-left: 8px; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; background: var(--student-soft); color: var(--student-deep); border-radius: 3px; padding: 1px 6px; text-transform: uppercase; flex-shrink: 0; }
 
   .sibling-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 4px; }
   .sibling-link { display: inline-flex; align-items: center; gap: 6px; background: var(--student-soft); border: 1px solid var(--line); border-left: 3px solid var(--student); border-radius: var(--radius); padding: .6rem 1rem; text-decoration: none; color: var(--ink); font-weight: 600; font-size: .9rem; transition: all .15s; }
@@ -123,7 +126,13 @@
     <ul class="timeline">
       <li>
         <span class="tl-date">06-01</span>
-        <span class="empty-note" data-ko="포털 개설 — 첫 수업 자료가 곧 여기에 올라옵니다." data-en="Portal created — your first lesson materials will appear here soon.">Portal created — your first lesson materials will appear here soon.</span>
+        <a class="lesson-link" href="https://onedrive.live.com/view.aspx?resid=26DC0D8618B1EF2B%21s203b40e563854e028622793e3a6e29ea&amp;id=documents&amp;wd=target%28June.one%7C108D83FF-8B48-4420-BE0E-8E5C80ED57F5%2FHW%206%5C%2F1%5C%2F2026%7CF067646D-F94C-433B-B2BF-52E8971D5F59%2F%29&amp;wdpartid={F3599CFF-CC8C-036D-0279-4F4156B7D9D6}{1}&amp;wdsectionfileid=26DC0D8618B1EF2B!s33fdd2b9ffab4f7694370a07a1c2c010" target="_blank" rel="noopener" data-ko="숙제 — 6/1/2026" data-en="Homework — 6/1/2026">Homework — 6/1/2026</a>
+        <span class="hw-badge">HW</span>
+      </li>
+      <li>
+        <span class="tl-date">06-01</span>
+        <a class="lesson-link" href="https://onedrive.live.com/view.aspx?resid=26DC0D8618B1EF2B%21s203b40e563854e028622793e3a6e29ea&amp;id=documents&amp;wd=target%28June.one%7C108D83FF-8B48-4420-BE0E-8E5C80ED57F5%2FHW%206%5C%2F1%5C%2F2026%200B%20A-01%7CEF6A9FFE-9849-4334-AC9D-5B5BC46E7947%2F%29&amp;wdpartid={508A0A47-42C7-0820-1C84-E973AFA82DCE}{1}&amp;wdsectionfileid=26DC0D8618B1EF2B!s33fdd2b9ffab4f7694370a07a1c2c010" target="_blank" rel="noopener" data-ko="숙제 — 6/1/2026 (0B A-01)" data-en="Homework — 6/1/2026 (0B A-01)">Homework — 6/1/2026 (0B A-01)</a>
+        <span class="hw-badge">HW</span>
       </li>
     </ul>
   </section>
